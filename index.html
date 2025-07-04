@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infografía de Esquema Societario</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Paleta de Colores:
+           #233d4d (Azul Oscuro)
+           #fe7f2d (Naranja)
+           #fcca46 (Amarillo)
+           #a1c181 (Verde Claro)
+           #619b8a (Verde Azulado)
+        */
+        :root {
+            --bg-dark: #233d4d;
+            --bg-card-main: #619b8a;
+            --bg-card-secondary: #a1c181;
+            --text-light: #FFFFFF;
+            --border-color: #fcca46;
+            --line-color-1: #fe7f2d; /* Industria Caldas */
+            --line-color-2: #fcca46; /* Quimica Basica */
+            --title-color: #fcca46;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+        }
+        .company-card {
+            border-radius: 0.75rem;
+            padding: 1rem;
+            text-align: center;
+            border: 2px solid;
+            border-color: var(--bg-card-secondary);
+            min-height: 90px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .company-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+        }
+        .company-main {
+            background-color: var(--bg-card-main);
+            border-color: #8fbcac;
+        }
+        .company-secondary {
+            background-color: var(--bg-card-secondary);
+            border-color: #c4e0b0;
+        }
+        .company-card h2 {
+            color: #233d4d; /* Texto oscuro para mejor contraste en tarjetas claras */
+            font-weight: 600;
+        }
+        .company-card .subtitle {
+             color: #2c4e63;
+        }
+        .connector-line {
+            position: absolute;
+            z-index: -1;
+        }
+        .percentage-label {
+            position: absolute;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid var(--title-color);
+            z-index: 1;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="w-full max-w-7xl mx-auto">
+        <h1 class="text-3xl sm:text-4xl font-bold text-center mb-16" style="color: var(--title-color);">Esquema Societario grupo Químicas</h1>
+
+        <div class="relative">
+            <!-- Nivel 1: Sociedades Principales -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-32 mb-24">
+                <div id="quimica-basica" class="company-card company-main">
+                    <h2 class="text-lg">Química Básica Colombiana S.A.</h2>
+                    <p class="text-sm subtitle">Composición Accionaria Diversa</p>
+                </div>
+                <div id="industria-caldas" class="company-card company-main">
+                    <h2 class="text-lg">Industria Básica de Caldas S.A.</h2>
+                    <p class="text-sm subtitle">Composición Accionaria Diversa</p>
+                </div>
+            </div>
+
+            <!-- Nivel 2: Sociedades Controladas -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-16 mb-24 items-start">
+                <div id="quimicos-cauca" class="company-card company-secondary">
+                    <h2 class="text-lg">Químicos del Cauca S.A.S.</h2>
+                </div>
+                <div id="ecovitta" class="company-card company-secondary">
+                    <h2 class="text-lg">Ecovitta EU S.A.S.</h2>
+                </div>
+                <div id="fosfatos-boyaca" class="company-card company-secondary">
+                    <h2 class="text-lg">Empresa de Fosfatos de Boyacá S.A.</h2>
+                </div>
+            </div>
+
+            <!-- Nivel 3: Subsidiaria Final -->
+            <div class="flex justify-center">
+                <div id="quimicos-mexico" class="w-full max-w-xs company-card company-secondary">
+                    <h2 class="text-lg">Químicos del Cauca - México</h2>
+                </div>
+            </div>
+
+            <div id="connector-container" class="absolute top-0 left-0 w-full h-full"></div>
+        </div>
+    </div>
+
+    <script>
+        function getElCenter(elId, containerRect) {
+            const el = document.getElementById(elId);
+            if (!el) return null;
+            const rect = el.getBoundingClientRect();
+            return {
+                x: rect.left + rect.width / 2 - containerRect.left,
+                y: rect.top + rect.height / 2 - containerRect.top,
+                top: rect.top - containerRect.top,
+                bottom: rect.bottom - containerRect.top,
+            };
+        }
+
+        function createLine(x1, y1, x2, y2, color, isDirect = false) {
+            const container = document.getElementById('connector-container');
+            const line = document.createElement('div');
+            line.classList.add('connector-line');
+            line.style.backgroundColor = color;
+            const lineWidth = '3px'; // Aumentar grosor de línea
+
+            if (isDirect) {
+                 const length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+                 const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+                 line.style.width = `${length}px`;
+                 line.style.height = lineWidth;
+                 line.style.left = `${x1}px`;
+                 line.style.top = `${y1}px`;
+                 line.style.transformOrigin = '0 0';
+                 line.style.transform = `rotate(${angle}deg)`;
+            } else {
+                line.style.left = `${Math.min(x1, x2)}px`;
+                line.style.top = `${Math.min(y1, y2)}px`;
+                if (x1 === x2) { // Vertical
+                    line.style.width = lineWidth;
+                    line.style.height = `${Math.abs(y2 - y1)}px`;
+                } else { // Horizontal
+                    line.style.height = lineWidth;
+                    line.style.width = `${Math.abs(x2 - x1)}px`;
+                }
+            }
+            container.appendChild(line);
+        }
+
+        function createLabel(text, x, y) {
+            const container = document.getElementById('connector-container');
+            const label = document.createElement('div');
+            label.classList.add('percentage-label');
+            label.textContent = text;
+            label.style.left = `${x}px`;
+            label.style.top = `${y}px`;
+            label.style.transform = 'translate(-50%, -50%)';
+            container.appendChild(label);
+        }
+
+        function drawClearConnector(fromId, toId, percentage, color, options = {}) {
+            const containerRect = document.getElementById('connector-container').getBoundingClientRect();
+            const from = getElCenter(fromId, containerRect);
+            const to = getElCenter(toId, containerRect);
+            if (!from || !to) return;
+            
+            const turnY = from.bottom + (options.turnYOffset || 40);
+
+            // 1. Vertical line down from source
+            createLine(from.x, from.bottom, from.x, turnY, color);
+            // 2. Horizontal line across
+            createLine(from.x, turnY, to.x, turnY, color);
+            // 3. Vertical line down to destination
+            createLine(to.x, turnY, to.x, to.top, color);
+
+            createLabel(percentage, from.x + (to.x - from.x) / 2, turnY);
+        }
+
+        function drawDirectConnector(fromId, toId, percentage, color) {
+             const containerRect = document.getElementById('connector-container').getBoundingClientRect();
+             const from = getElCenter(fromId, containerRect);
+             const to = getElCenter(toId, containerRect);
+             if (!from || !to) return;
+             createLine(from.x, from.bottom, to.x, to.top, color, true);
+             createLabel(percentage, from.x + (to.x - from.x)/2, from.y + (to.y-from.y)/1.5);
+        }
+
+
+        function renderConnectors() {
+            const container = document.getElementById('connector-container');
+            container.innerHTML = ''; // Clear previous lines
+
+            const colors = {
+                caldas: getComputedStyle(document.documentElement).getPropertyValue('--line-color-1').trim(),
+                basica: getComputedStyle(document.documentElement).getPropertyValue('--line-color-2').trim()
+            };
+
+            // --- Conexiones a Quimicos del Cauca (Lógica mejorada) ---
+            drawClearConnector('industria-caldas', 'quimicos-cauca', '70.83%', colors.caldas, { turnYOffset: 60 });
+            drawClearConnector('quimica-basica', 'quimicos-cauca', '29.17%', colors.basica, { turnYOffset: 30 });
+            
+            // --- Otras conexiones ---
+            drawClearConnector('industria-caldas', 'ecovitta', '100%', colors.caldas);
+            drawClearConnector('industria-caldas', 'fosfatos-boyaca', '32.24%', colors.caldas);
+            
+            // Conexión a México desde Cauca, usando el color de su propietario mayoritario (Caldas)
+            drawClearConnector('quimicos-cauca', 'quimicos-mexico', '99.99%', colors.caldas);
+            
+            // --- Conexión directa especial ---
+            drawDirectConnector('quimica-basica', 'quimicos-mexico', '0.01%', colors.basica);
+        }
+        
+        window.addEventListener('load', renderConnectors);
+        window.addEventListener('resize', renderConnectors);
+    </script>
+</body>
+</html>
